@@ -15,7 +15,7 @@
 <body>
 
 <h2>DEBUG MODE – Data That Will Be Sent to UMA TPV</h2>
-<p class="note">Check all fields below. If any are empty, malformed, or contain forbidden characters, UMA will reject the request.</p>
+<p class="note">Check all fields below. If any are empty or malformed, UMA may reject the request.</p>
 
 <div class="info">
     <pre id="debug"></pre>
@@ -29,37 +29,38 @@
 </form>
 
 <script>
-    console.log("Debug bridge loaded.");
+console.log("Debug bridge loaded.");
 
-    // Read URL parameters
-    const urlParams = new URLSearchParams(window.location.search);
+// Read URL parameters
+const urlParams = new URLSearchParams(window.location.search);
 
-    const amount      = urlParams.get('amount');
-    const concept     = urlParams.get('payment_concept');
-    const fullName    = urlParams.get('full_name');
-    const documentId  = urlParams.get('document_id');
+// Decode parameters for display
+const amount      = urlParams.get('amount');
+const concept     = decodeURIComponent(urlParams.get('payment_concept') || '');
+const fullName    = decodeURIComponent(urlParams.get('full_name') || '');
+const documentId  = decodeURIComponent(urlParams.get('document_id') || '');
 
-    // Fill form
-    document.getElementById('amount').value = amount;
-    document.getElementById('payment_concept').value = concept;
-    document.getElementById('full_name').value = fullName;
-    document.getElementById('document_id').value = documentId;
+// Fill hidden form for submission
+document.getElementById('amount').value = amount;
+document.getElementById('payment_concept').value = concept;
+document.getElementById('full_name').value = fullName;
+document.getElementById('document_id').value = documentId;
 
-    // Display values for debugging
-    document.getElementById('debug').textContent =
-        "amount: " + amount + "\n" +
-        "payment_concept: " + concept + "\n" +
-        "full_name: " + fullName + "\n" +
-        "document_id: " + documentId + "\n\n" +
-        "The form will auto-submit in 10 seconds...";
+// Display values nicely for debug (no %20)
+document.getElementById('debug').textContent =
+    "amount: " + amount + "\n" +
+    "payment_concept: " + concept + "\n" +
+    "full_name: " + fullName + "\n" +
+    "document_id: " + documentId + "\n\n" +
+    "The form will auto-submit in 10 seconds...";
 
-    console.log("Debug output:", { amount, concept, fullName, documentId });
+console.log("Debug output:", { amount, concept, fullName, documentId });
 
-    // Auto-submit after 10 seconds
-    setTimeout(() => {
-        console.log("Submitting to UMA TPV...");
-        document.getElementById('paymentForm').submit();
-    }, 10000);
+// Auto-submit after 10 seconds
+setTimeout(() => {
+    console.log("Submitting to UMA TPV...");
+    document.getElementById('paymentForm').submit();
+}, 10000);
 </script>
 
 </body>
