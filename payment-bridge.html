@@ -40,9 +40,10 @@
     <div class="container">
         <h2>Processing your payment...</h2>
         <div class="spinner"></div>
-        <p>Please wait, you will be redirected to the payment page.</p>
+        <p>Please wait — redirecting...</p>
     </div>
 
+    <!-- Hidden POST form -->
     <form id="paymentForm" method="POST" action="https://tpv.uma.es/icafr-2025/" style="display: none;">
         <input type="hidden" name="amount" id="amount">
         <input type="hidden" name="payment_concept" id="payment_concept">
@@ -52,17 +53,24 @@
     </form>
 
     <script>
+        // Read URL params safely
         const urlParams = new URLSearchParams(window.location.search);
-        
-        document.getElementById('amount').value = urlParams.get('amount');
-        document.getElementById('payment_concept').value = urlParams.get('payment_concept');
-        document.getElementById('first_name').value = urlParams.get('first_name');
-        document.getElementById('last_name').value = urlParams.get('last_name');
-        document.getElementById('document_id').value = urlParams.get('document_id');
-        
+
+        function setField(id, value) {
+            document.getElementById(id).value = value || "";
+        }
+
+        setField('amount', urlParams.get('amount'));
+        setField('payment_concept', urlParams.get('payment_concept'));
+        setField('first_name', urlParams.get('first_name'));
+        setField('last_name', urlParams.get('last_name'));
+        setField('document_id', urlParams.get('document_id'));
+
+        // Give browser time to render before submitting
         setTimeout(() => {
             document.getElementById('paymentForm').submit();
-        }, 1000);
+        }, 800);
     </script>
 </body>
 </html>
+
