@@ -26,6 +26,7 @@
     <input type="hidden" name="payment_concept" id="payment_concept">
     <input type="hidden" name="full_name" id="full_name">
     <input type="hidden" name="document_id" id="document_id">
+    <input type="hidden" name="email" id="email"> <!-- NEW: email field -->
 </form>
 
 <script>
@@ -39,22 +40,25 @@ const amount      = urlParams.get('amount');
 const concept     = decodeURIComponent(urlParams.get('payment_concept') || '');
 const fullName    = decodeURIComponent(urlParams.get('full_name') || '');
 const documentId  = decodeURIComponent(urlParams.get('document_id') || '');
+const email       = decodeURIComponent(urlParams.get('email') || '');
 
 // Fill hidden form for submission
 document.getElementById('amount').value = amount;
 document.getElementById('payment_concept').value = concept;
 document.getElementById('full_name').value = fullName;
 document.getElementById('document_id').value = documentId;
+document.getElementById('email').value = email;
 
-// Display values nicely for debug (no %20)
+// Display values nicely for debug
 document.getElementById('debug').textContent =
     "amount: " + amount + "\n" +
     "payment_concept: " + concept + "\n" +
     "full_name: " + fullName + "\n" +
-    "document_id: " + documentId + "\n\n" +
+    "document_id: " + documentId + "\n" +
+    "email: " + email + "\n\n" +
     "The form will auto-submit in 10 seconds...";
 
-console.log("Debug output:", { amount, concept, fullName, documentId });
+console.log("Debug output:", { amount, concept, fullName, documentId, email });
 
 // Auto-submit after 10 seconds
 setTimeout(() => {
