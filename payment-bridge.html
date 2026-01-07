@@ -1,59 +1,62 @@
 <script>
-console.log("Redirect bridge loaded.");
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Redirect bridge loaded.");
 
-// Read URL parameters
-const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
 
-// Parse and validate amount
-const rawAmount = urlParams.get('amount');
-const amount = parseFloat(rawAmount);
+    const rawAmount = urlParams.get('amount');
+    const amount = parseFloat(rawAmount);
 
-const MIN_AMOUNT = 50.00;
+    const MIN_AMOUNT = 50.00;
 
-// Hard block invalid amounts
-if (!amount || isNaN(amount) || amount < MIN_AMOUNT) {
-    document.body.innerHTML = `
-        <div style="
-            font-family: Arial, sans-serif;
-            background: #fff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 400px;
-            margin: auto;
-        ">
-            <h2>Invalid payment</h2>
-            <p>The payment amount is not valid.</p>
-            <p>Please return to the registration page and select a valid option.</p>
-        </div>
-    `;
-    throw new Error("Blocked payment: invalid amount");
-}
+    // Hard block invalid amounts
+    if (!amount || isNaN(amount) || amount < MIN_AMOUNT) {
+        document.body.innerHTML = `
+            <div style="
+                font-family: Arial, sans-serif;
+                background: white;
+                padding: 40px;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                text-align: center;
+                max-width: 400px;
+                margin: auto;
+            ">
+                <h2>Invalid payment</h2>
+                <p>The payment amount is not allowed.</p>
+                <p>Please return to the registration page.</p>
+            </div>
+        `;
+        return; // ✅ clean stop, no crash
+    }
 
-// Decode and fill hidden form
-document.getElementById('amount').value = amount.toFixed(2);
-document.getElementById('payment_concept').value =
-    decodeURIComponent(urlParams.get('payment_concept') || '');
-document.getElementById('full_name').value =
-    decodeURIComponent(urlParams.get('full_name') || '');
-document.getElementById('document_id').value =
-    decodeURIComponent(urlParams.get('document_id') || '');
-document.getElementById('email').value =
-    decodeURIComponent(urlParams.get('email') || '');
+    // Fill hidden form
+    document.getElementById('amount').value = amount.toFixed(2);
+    document.getElementById('payment_concept').value =
+        decodeURIComponent(urlParams.get('payment_concept') || '');
+    document.getElementById('full_name').value =
+        decodeURIComponent(urlParams.get('full_name') || '');
+    document.getElementById('document_id').value =
+        decodeURIComponent(urlParams.get('document_id') || '');
+    document.getElementById('email').value =
+        decodeURIComponent(urlParams.get('email') || '');
 
-// Optional: basic sanity checks (recommended)
-const concept = document.getElementById('payment_concept').value;
-const email = document.getElementById('email').value;
+    // Extra sanity checks
+    const concept = document.getElementById('payment_concept').value;
+    const email = document.getElementById('email').value;
 
-if (!concept || concept.length < 10 || !email.includes('@')) {
-    document.body.innerHTML = `<h2>Invalid payment request</h2>`;
-    throw new Error("Blocked malformed payment request");
-}
+    if (!concept || concept.length < 10 || !email.includes('@')) {
+        document.body.innerHTML = `
+            <h2 style="text-align:center;">Invalid payment request</h2>
+        `;
+        return;
+    }
 
-// Auto-submit after 3 seconds
-setTimeout(() => {
-    console.log("Submitting to UMA TPV...");
-    document.getElementById('paymentForm').submit();
-}, 3000);
+    // Auto-submit
+    setTimeout(() => {
+        console.log("Submitting to UMA TPV...");
+        document.getElementById('paymentForm').submit();
+    }, 3000);
+});
 </script>
+
