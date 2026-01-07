@@ -1,62 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redirecting to UMA TPV</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #f5f5f5;
+}
+.container {
+    text-align: center;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Redirecting to UMA TPV...</h2>
+    <div class="spinner"></div>
+    <p>Please wait while the payment page loads.</p>
+</div>
+
+<form id="paymentForm" method="POST" action="https://tpv.uma.es/icafr-2025/" style="display:none;">
+    <input type="hidden" name="amount" id="amount">
+    <input type="hidden" name="payment_concept" id="payment_concept">
+    <input type="hidden" name="full_name" id="full_name">
+    <input type="hidden" name="document_id" id="document_id">
+    <input type="hidden" name="email" id="email">
+</form>
+
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("Redirect bridge loaded.");
+console.log("Redirect bridge loaded");
 
-    const urlParams = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
+const rawAmount = params.get('amount');
+const amount = parseFloat(rawAmount);
 
-    const rawAmount = urlParams.get('amount');
-    const amount = parseFloat(rawAmount);
+const MIN_AMOUNT = 50;
 
-    const MIN_AMOUNT = 50.00;
-
-    // Hard block invalid amounts
-    if (!amount || isNaN(amount) || amount < MIN_AMOUNT) {
-        document.body.innerHTML = `
-            <div style="
-                font-family: Arial, sans-serif;
-                background: white;
-                padding: 40px;
-                border-radius: 10px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                text-align: center;
-                max-width: 400px;
-                margin: auto;
-            ">
-                <h2>Invalid payment</h2>
-                <p>The payment amount is not allowed.</p>
-                <p>Please return to the registration page.</p>
-            </div>
-        `;
-        return; // ✅ clean stop, no crash
-    }
-
-    // Fill hidden form
+// BLOCK invalid amounts
+if (!amount || isNaN(amount) || amount < MIN_AMOUNT) {
+    alert("Invalid payment amount. Please return to the registration page.");
+} else {
     document.getElementById('amount').value = amount.toFixed(2);
     document.getElementById('payment_concept').value =
-        decodeURIComponent(urlParams.get('payment_concept') || '');
+        decodeURIComponent(params.get('payment_concept') || '');
     document.getElementById('full_name').value =
-        decodeURIComponent(urlParams.get('full_name') || '');
+        decodeURIComponent(params.get('full_name') || '');
     document.getElementById('document_id').value =
-        decodeURIComponent(urlParams.get('document_id') || '');
+        decodeURIComponent(params.get('document_id') || '');
     document.getElementById('email').value =
-        decodeURIComponent(urlParams.get('email') || '');
+        decodeURIComponent(params.get('email') || '');
 
-    // Extra sanity checks
-    const concept = document.getElementById('payment_concept').value;
-    const email = document.getElementById('email').value;
-
-    if (!concept || concept.length < 10 || !email.includes('@')) {
-        document.body.innerHTML = `
-            <h2 style="text-align:center;">Invalid payment request</h2>
-        `;
-        return;
-    }
-
-    // Auto-submit
     setTimeout(() => {
-        console.log("Submitting to UMA TPV...");
+        console.log("Submitting to UMA TPV");
         document.getElementById('paymentForm').submit();
     }, 3000);
-});
+}
 </script>
+
+</body>
+</html>
+
 
